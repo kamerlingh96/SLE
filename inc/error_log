@@ -1,0 +1,2 @@
+[31-Jul-2018 04:10:30 UTC] PHP Notice:  Undefined variable: message in /home/bmmonx18d7za/public_html/www.sle.com.mx/inc/sendEmail.php on line 31
+[31-Jul-2018 04:10:30 UTC] PHP Notice:  Undefined variable: error in /home/bmmonx18d7za/public_html/www.sle.com.mx/inc/sendEmail.php on line 47

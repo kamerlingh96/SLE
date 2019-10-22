@@ -1,0 +1,22 @@
+[07-May-2019 20:21:59 Asia/Dhaka] PHP Fatal error:  Uncaught Error: Call to a member function fetch_object() on boolean in /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/drivers/mysqli/mysqli_result.php:229
+Stack trace:
+#0 /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/DB_result.php(259): CI_DB_mysqli_result->_fetch_object()
+#1 /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/DB_result.php(409): CI_DB_result->result_object()
+#2 /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/DB_result.php(335): CI_DB_result->row_object(0)
+#3 /home/xswwj1owcqaz/public_html/sle.com.mx/system/libraries/Session/drivers/Session_database_driver.php(399): CI_DB_result->row()
+#4 /home/xswwj1owcqaz/public_html/sle.com.mx/system/libraries/Session/drivers/Session_database_driver.php(280): CI_Session_database_driver->_release_lock()
+#5 [internal function]: CI_Session_database_driver->close()
+#6 [internal function]: session_write_close()
+#7 {main}
+  thrown in /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/drivers/mysqli/mysqli_result.php on line 229
+[27-May-2019 20:21:10 Asia/Dhaka] PHP Fatal error:  Uncaught Error: Call to a member function fetch_object() on boolean in /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/drivers/mysqli/mysqli_result.php:229
+Stack trace:
+#0 /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/DB_result.php(259): CI_DB_mysqli_result->_fetch_object()
+#1 /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/DB_result.php(409): CI_DB_result->result_object()
+#2 /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/DB_result.php(335): CI_DB_result->row_object(0)
+#3 /home/xswwj1owcqaz/public_html/sle.com.mx/system/libraries/Session/drivers/Session_database_driver.php(399): CI_DB_result->row()
+#4 /home/xswwj1owcqaz/public_html/sle.com.mx/system/libraries/Session/drivers/Session_database_driver.php(280): CI_Session_database_driver->_release_lock()
+#5 [internal function]: CI_Session_database_driver->close()
+#6 [internal function]: session_write_close()
+#7 {main}
+  thrown in /home/xswwj1owcqaz/public_html/sle.com.mx/system/database/drivers/mysqli/mysqli_result.php on line 229
