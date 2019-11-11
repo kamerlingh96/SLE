@@ -1551,6 +1551,12 @@ class Admin extends CI_Controller
                     'year'=>$data['year'],
                         'timestamp'=>$data['timestamp']
         ));
+        $query2 = $this->db->get_where('evaluacion' ,array(
+            'class_id'=>$data['class_id'],
+                'section_id'=>$data['section_id'],
+                    'year'=>$data['year'],
+                        'timestamp'=>$data['timestamp']
+        ));
         if($query->num_rows() < 1) {
             $students = $this->db->get_where('enroll' , array(
                 'class_id' => $data['class_id'] , 'section_id' => $data['section_id'] , 'year' => $data['year']
@@ -1565,6 +1571,37 @@ class Admin extends CI_Controller
                 $this->db->insert('attendance' , $attn_data);
             }
 
+            foreach ($students as $row) {
+              $attn_data2['class_id']   = $data['class_id'];
+              $attn_data2['year']       = $data['year'];
+              $attn_data2['timestamp']  = $data['timestamp'];
+              $attn_data2['section_id'] = $data['section_id'];
+              $attn_data2['student_id'] = $row['student_id'];
+              $this->db->insert('evaluacion' , $attn_data2);
+            }
+
+        }
+        if($query2->num_rows() < 1) {
+            $students = $this->db->get_where('enroll' , array(
+                'class_id' => $data['class_id'] , 'section_id' => $data['section_id'] , 'year' => $data['year']
+            ))->result_array();
+
+            $subjects = $this->db->get_where('subject' , array('class_id' => $data['class_id'], 'year' => $data['year']))->result_array();
+
+            foreach ($students as $row) {
+              foreach ($subjects as $subject) {
+                $attn_data2['class_id']   = $data['class_id'];
+                $attn_data2['year']       = $data['year'];
+                $attn_data2['timestamp']  = $data['timestamp'];
+                $attn_data2['section_id'] = $data['section_id'];
+                $attn_data2['student_id'] = $row['student_id'];
+                $attn_data2['subject_id'] = $subject['subject_id'];
+                if ($subject['subject_id'] != 0) {
+                  $this->db->insert('evaluacion' , $attn_data2);
+                }
+              }
+            }
+
         }
         redirect(site_url('admin/manage_attendance_view/' . $data['class_id'] . '/' . $data['section_id'] . '/' . $data['timestamp']),'refresh');
     }
@@ -1576,13 +1613,16 @@ class Admin extends CI_Controller
         $attendance_of_students = $this->db->get_where('attendance' , array(
             'class_id'=>$class_id,'section_id'=>$section_id,'year'=>$running_year,'timestamp'=>$timestamp
         ))->result_array();
+
+        $evaluacion_of_students = $this->db->get_where('evaluacion', array(
+            'class_id'=>$class_id,'section_id'=>$section_id,'year'=>$running_year,'timestamp'=>$timestamp
+        ))->result_array();
         foreach($attendance_of_students as $row) {
             $attendance_status = $this->input->post('status_'.$row['attendance_id']);
             $attendance_recompensas = $this->input->post('recompensas_'.$row['attendance_id']);  //nueva linea
             $attendance_demeritos = $this->input->post('demeritos_'.$row['attendance_id']);  //nueva linea
-            $attendance_evaluacion = $this->input->post('evaluacion_'.$row['attendance_id']);  //nueva linea
             $this->db->where('attendance_id' , $row['attendance_id']);
-            $this->db->update('attendance' , array('status' => $attendance_status, 'recompensas' => $attendance_recompensas, 'demeritos' => $attendance_demeritos, 'evaluacion' => $attendance_evaluacion)); // nuevo valor en array
+            $this->db->update('attendance' , array('status' => $attendance_status, 'recompensas' => $attendance_recompensas, 'demeritos' => $attendance_demeritos)); // nuevo valor en array
 
             if ($attendance_status == 2) {
 
@@ -1604,6 +1644,11 @@ class Admin extends CI_Controller
                     }
                 }
             }
+        }
+        foreach ($evaluacion_of_students as $row) {
+          $evaluacion = $this->input->post('evaluacion_'.$row['id']);
+          $this->db->where('id' , $row['id']);
+          $this->db->update('evaluacion' , array('evaluacion' => $evaluacion));
         }
         $this->session->set_flashdata('flash_message' , get_phrase('attendance_updated'));
         redirect(site_url('admin/manage_attendance_view/'.$class_id.'/'.$section_id.'/'.$timestamp) , 'refresh');

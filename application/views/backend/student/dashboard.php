@@ -1,3 +1,4 @@
+	<script src="<?php echo base_url('assets/js/confetti.js-master/index.min.js');?>"></script>
 <div class="row">
 	<div class="col-md-8">
     	<div class="row">
@@ -123,23 +124,6 @@
 
 								 ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <div class="tile-stats tile-red">
                     <div class="icon"><i class="fa fa-group"></i></div>
                     <div class="num" data-start="0" data-end="<?php echo $recompensas;?>"
@@ -166,30 +150,28 @@
 
 						<div class="col-md-12">
 
+
 							<?php
-			$checkEvaluacionJueves   =   array(  'timestamp' => strtotime("last Thursday"), 'student_id' => $student_id );
-									$query = $this->db->get_where('attendance' , $checkEvaluacionJueves)->result();
-									/*echo "<pre>";
-									print_r ( $query);
-									echo "</pre>";*/
-									  foreach ($query as  $evaJueves) {
-											echo $evaJueves->evaluacio;
-									  	$resultadoEvaluacionJ =+ $evaJueves->evaluacion;
-									  }
+							$subjects = $this->db->get_where('subject' , array('class_id' => $class_id, 'year' => $running_year))->result();
 
-
-
-			$checkEvaluacionViernes   =   array(  'timestamp' => strtotime("last Friday"), 'student_id' => $student_id );
-									$query = $this->db->get_where('attendance' , $checkEvaluacionViernes)->result();
-									/*echo "<pre>";
-									print_r ( $query);
-									echo "</pre>";*/
-									foreach ($query as  $evaViernes) {
-										echo $evaViernes->evaluacio;
-										$resultadoEvaluacionV =+ $evaViernes->evaluacion;
+									$checkEvaluacionViernes   =   array(  'timestamp' => strtotime("last Friday"), 'student_id' => $student_id, 'year' => $running_year,'class_id' => $class_id);
+									$query = $this->db->get_where('evaluacion' , $checkEvaluacionViernes)->result();
+									$mayorEvaluacion = false;
+									foreach ($subjects as $subject) {
+										foreach ($query as $value) {
+											if ($subject->subject_id == $value->subject_id) {
+												if ($value->evaluacion > 79) {
+													$materia[] = $subject->name;
+													$evaluacionFinal[] = $value->evaluacion;
+													$mayorEvaluacion = true;
+												}
+											}
+										}
 									}
 
-									$resultadoEvaluacion = $resultadoEvaluacionV + $resultadoEvaluacionJ;
+									/*echo "<pre>";
+									print_r ( $query);
+									echo "</pre>";*/
 			?>
 
 
@@ -218,6 +200,7 @@
 
 </div>
 
+
 <!-- Central Modal Small -->
 <div class="modal fade" id="centralModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 
@@ -229,18 +212,21 @@
       <div class="modal-body" id="modalFelicidades">
         <canvas id="my-canvas">
 				</canvas>
-				<div class="row" style="position:absolute; top:0%;width:100%;height:100%; color:black;display: flex;justify-content: center;align-items: center;">
-					<div class="col-md-4 counter text-center felicidades1" style="font-size:50px;font-family:'Roboto', sans-serif;">
-						0
-					</div>
-					<div class="col-md-8 text-center">
+				<div class="row" id="felicidadesModal" style=" top:0%;width:100%;height:100%; color:black;display: flex;justify-content: center;align-items: center;">
+					<div class="col-md-12">
 						<div class="row">
-							<div class="col-md-12 felicidades1" style="font-size:50px;font-family:'Roboto', sans-serif; height:100%">
-								Felicidades
-							</div>
-							<div class="col-md-12 felicidades2" style="font-size:35px;font-family:'Roboto', sans-serif; height:100%">
-								Sigue asi
-							</div>
+							<?php foreach ($materia as $key => $value): ?>
+								<div class="col-md-8 text-center">
+									<div class="row">
+										<div class="col-md-12 felicidades1" style="font-size:50px;font-family:'Roboto', sans-serif; height:100%">
+											<?php echo $value ?>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4 counter<?php echo $key ?> text-center felicidades1" style="font-size:50px;font-family:'Roboto', sans-serif;">
+									0
+								</div>
+							<?php endforeach; ?>
 						</div>
 					</div>
 				</div>
@@ -252,6 +238,9 @@
   </div>
 </div>
 <!-- Central Modal Small -->
+
+
+
 
 
 
@@ -305,21 +294,21 @@
 	<script src="<?php echo base_url('assets/js/confetti.js-master/index.min.js');?>"></script>
 
 	<script type="text/javascript">
-
-
 	window.onload = function() {
-		if (<?php echo $resultadoEvaluacion;?> > 79) {
-
+		if (<?php echo $mayorEvaluacion;?>) {
 			felicidades();
 		}
 	};
-
 	function felicidades(){
 		$('#centralModalSm').modal('show');
 		var delayInMilliseconds = 500; //1 second
-
 		setTimeout(function() {
 			var modalFelicidades = document.getElementById("modalFelicidades");
+			var felicidadesModal = document.getElementById("felicidadesModal");
+			console.log("hola; "+felicidadesModal.clientHeight);
+			modalFelicidades.style.height = ""+felicidadesModal.clientHeight+"px"
+			felicidadesModal.style.position = "absolute";
+
 			console.log(modalFelicidades.clientWidth);
 			console.log(modalFelicidades.clientWidth);
 			var modalFelicidadesWidth =  modalFelicidades.clientWidth-15
@@ -333,29 +322,27 @@
 			};
 			var confetti = new ConfettiGenerator(confettiSettings);
 			confetti.render();
-			count();
+			<?php foreach ($materia as $key => $value): ?>
+
+			count<?php echo $key ?>();
+			<?php endforeach; ?>
 		}, delayInMilliseconds);
-
-
 	}
-
-	function count(){
-  var counter = { var: 0 };
-  TweenMax.to(counter, 3, {
-    var: <?php echo $resultadoEvaluacion;?>,
-    onUpdate: function () {
-      var number = Math.ceil(counter.var);
-      $('.counter').html(number);
-      if(number === counter.var){ count.kill(); }
-    },
-    onComplete: function(){
-      count();
-    },
-    ease:Circ.easeOut
-  });
-}
-
-
-
-
+	<?php foreach ($materia as $key => $value): ?>
+	function count<?php echo $key ?>(){
+		var counter = { var: 0 };
+		TweenMax.to(counter, 3, {
+			var: <?php echo $evaluacionFinal[$key]; ?>,
+			onUpdate: function () {
+				var number = Math.ceil(counter.var);
+				$('.counter<?php echo $key ?>').html(number);
+				if(number === counter.var){ count.kill(); }
+			},
+			onComplete: function(){
+				count();
+			},
+			ease:Circ.easeOut
+		});
+	}
+	<?php endforeach; ?>
 	</script>

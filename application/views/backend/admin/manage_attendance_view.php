@@ -102,9 +102,11 @@
 
       <?php
       date_default_timezone_set('Mexico/General');
+
+      $subjects = $this->db->get_where('subject' , array('class_id' => $class_id, 'year' => $running_year))->result_array();
        ?>
         <?php echo form_open(site_url('admin/attendance_update/'. $class_id . '/' . $section_id . '/' . $timestamp)); ?>
-        <div id="attendance_update">
+        <div id="attendance_update" style="overflow:auto;">
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -114,7 +116,9 @@
                         <th><?php echo get_phrase('status'); ?></th>
                         <th><?php echo get_phrase('recompensas'); ?></th>
                         <th><?php echo "Deméritos"; ?></th>
-                        <th><?php echo "Evaluación"; ?></th>
+                        <?php foreach ($subjects as $row): ?>
+                          <th><?php echo $row['name']; ?></th>
+                        <?php endforeach; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,6 +126,13 @@
                     $count = 1;
                     $select_id = 0;
                     $attendance_of_students = $this->db->get_where('attendance', array(
+                                'class_id' => $class_id,
+                                'section_id' => $section_id,
+                                'year' => $running_year,
+                                'timestamp' => $timestamp
+                            ))->result_array();
+
+                    $evaluacion_of_students = $this->db->get_where('evaluacion', array(
                                 'class_id' => $class_id,
                                 'section_id' => $section_id,
                                 'year' => $running_year,
@@ -140,7 +151,7 @@
                                 <?php echo $this->db->get_where('student', array('student_id' => $row['student_id']))->row()->name; ?>
                             </td>
                             <td>
-                                <select class="form-control" name="status_<?php echo $row['attendance_id']; ?>" id="status_<?php echo $select_id; ?>">
+                                <select class="form-control" name="status_<?php echo $row['attendance_id']; ?>" id="status_<?php echo $select_id; ?>" style="width:auto;">
                                     <option value="2" <?php if ($row['status'] == 2) echo 'selected'; ?>><?php echo get_phrase('absent'); ?></option>
                                     <option value="1" <?php if ($row['status'] == 1) echo 'selected'; ?>><?php echo get_phrase('present'); ?></option>
 
@@ -148,10 +159,14 @@
                             </td>
                             <td><input type="number" min="0" name="recompensas_<?php echo $row['attendance_id']; ?>" id="recompensas_<?php echo $select_id; ?>" value="<?php if ($row['recompensas'] > 0){ echo $row['recompensas'];}else {echo "0";} ?>"></td>
                             <td><input type="number" min="0"  name="demeritos_<?php echo $row['attendance_id']; ?>" id="demeritos_<?php echo $select_id; ?>" value="<?php if ($row['demeritos'] > 0){ echo $row['demeritos'];}else {echo "0";} ?>"></td>
-                            <?php if (true/*date("l") == "Thursday" || date("l") == "Friday"*/): ?>
-                              <td><input type="number" min="0"  name="evaluacion_<?php echo $row['attendance_id']; ?>" id="evaluacion_<?php echo $select_id; ?>" value="<?php if ($row['evaluacion'] > 0){ echo $row['evaluacion'];}else {echo "0";} ?>"></td>
-                            <?php endif; ?>
+                            <?php foreach ($evaluacion_of_students as $key => $evaluacion): ?>
+                              <?php if ($evaluacion['student_id'] == $row['student_id']): ?>
+                                <?php if ($evaluacion['subject_id'] != 0): ?>
 
+                                  <td><input type="number" min="0"  name="evaluacion_<?php echo $evaluacion['id'];?>" id="evaluacion_<?php echo $select_id; ?>" value="<?php if ($evaluacion['evaluacion'] > 0){ echo $evaluacion['evaluacion'];}else {echo "0";} ?>"></td>
+                                <?php endif; ?>
+                              <?php endif; ?>
+                            <?php endforeach; ?>
                         </tr>
                     <?php
                     $select_id++;
