@@ -384,7 +384,7 @@ class Crud_model extends CI_Model {
         $current_user = $this->session->userdata('login_type') . '-' . $this->session->userdata('login_user_id');
         $messages = $this->db->get_where('message', array('message_thread_code' => $message_thread_code))->result_array();
         foreach ($messages as $row) {
-            if ($row['sender'] != $current_user && $row['read_status'] == '0')
+            if ($row['sender'] != $current_user && $row['read_status'] == null)
                 $unread_message_counter++;
         }
         return $unread_message_counter;

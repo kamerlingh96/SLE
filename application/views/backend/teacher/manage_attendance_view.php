@@ -81,6 +81,8 @@
 
 		<?php
 		date_default_timezone_set('Mexico/General');
+
+		$subjects = $this->db->get_where('subject' , array('class_id' => $class_id, 'year' => $running_year))->result_array();
 		 ?>
 
 	<?php echo form_open(site_url('teacher/attendance_update/'.$class_id.'/'.$section_id.'/'.$timestamp));?>
@@ -94,12 +96,15 @@
 						<th><?php echo get_phrase('status');?></th>
 						<th><?php echo get_phrase('recompensas'); ?></th>
 						<th><?php echo "Deméritos"; ?></th>
+						<?php foreach ($subjects as $row): ?>
+							<th><?php echo $row['name']; ?></th>
+						<?php endforeach; ?>
 					</tr>
 				</thead>
 				<tbody>
 				<?php
 					$count = 1;
-                    $select_id = 0;
+          $select_id = 0;
 					if($section_id != ''){
 						$attendance_of_students = $this->db->get_where('attendance' , array(
 							'class_id' => $class_id, 'section_id' => $section_id , 'year' => $running_year,'timestamp'=>$timestamp

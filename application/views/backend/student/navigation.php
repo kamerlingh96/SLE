@@ -139,10 +139,34 @@
         </li>
 
         <!-- MESSAGE -->
+
+        <?php
+        $totalMensajes = 0;
+        $current_user = $this->session->userdata('login_type') . '-' . $this->session->userdata('login_user_id');
+
+        $this->db->where('sender', $current_user);
+        $this->db->or_where('reciever', $current_user);
+        $message_threads = $this->db->get('message_thread')->result_array();
+        foreach ($message_threads as $row){
+
+            // defining the user to show
+            if ($row['sender'] == $current_user)
+                $user_to_show = explode('-', $row['reciever']);
+            if ($row['reciever'] == $current_user)
+                $user_to_show = explode('-', $row['sender']);
+
+            $user_to_show_type = $user_to_show[0];
+            $user_to_show_id = $user_to_show[1];
+            $unread_message_number = $this->crud_model->count_unread_message_of_thread($row['message_thread_code']);
+            if ($unread_message_number > 0) {
+              $totalMensajes = $totalMensajes + $unread_message_number;
+            }
+        }
+        ?>
         <li class="<?php if ($page_name == 'message' || $page_name == 'group_message') echo 'active'; ?> ">
             <a href="<?php echo site_url($account_type.'/message'); ?>">
                 <i class="entypo-mail"></i>
-                <span><?php echo get_phrase('message'); ?></span>
+                <span><?php echo get_phrase('message'); ?></span> <span class="badge badge-secondary pull-right"> <?php echo $totalMensajes ?></span>
             </a>
         </li>
 

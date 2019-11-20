@@ -1539,6 +1539,7 @@ class Admin extends CI_Controller
           $page_data['class_id'] = $class_id;
           $this->load->view('backend/admin/manage_attendance_section_holder' , $page_data);
     }
+
     function attendance_selector()
     {
         $data['class_id']   = $this->input->post('class_id');
